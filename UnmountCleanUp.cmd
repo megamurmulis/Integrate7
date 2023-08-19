@@ -1,5 +1,8 @@
 @echo off
 TITLE Windows 7 Integrator Clean up script
+pause
+:: ## MODS:
+:: ## 1. pause
 CLS
 
 ::

@@ -1,5 +1,27 @@
 @echo off
 TITLE Windows 7 Integrator
+pause
+:: ## MODS:
+:: ## 1. pause
+:: ## 2. No whitepace in front of ::
+:: ## 3. Fix missing ControlSet002\Services\secdrv
+:: ## 4. Do not delete Policy Definitions (.admx, .adml)
+:: ## 5. Extend DisableObsoleteSSL - add DisableObsoleteSSL_Allow_TLS_11 option
+:: ## 6.1.  Re-Add option: DisableUAC
+:: ## 6.2.  Add option: ApplyPowerOptionsConfig (HDD, USB, Monitor)
+:: ## 6.3.  Add option: EnableHideSaveZoneInformation - to disable HideZoneInfoOnProperties config
+:: ## 6.4.  Add option: DisableCertificateRevocationCheck
+:: ## 6.5.  Add option: DisableKeyboardSwitchingKey
+:: ## 6.6.  Add option: HideLanguageBar
+:: ## 6.7.  Add option: DisableAnimationsSounds
+:: ## 6.8.  Add option: DisableBeepService
+:: ## 6.9.  Add option: DisableNTFSLastAccess
+:: ## 6.10. Add option: DisablePrintEventLog
+:: ## 6.11. Add option: HideMapNetworkDrive
+:: ## 6.12. Add option: HideManageMyComputer
+:: ## 6.13. Add option: DisableRecentDocsHistory
+:: ## 6.14. Add option: DisableUPnP
+:: ## 6.15. Add option: DisableAddressBarAutoSuggest
 CLS
 
 ::
@@ -13,63 +35,97 @@ CLS
 :: ============================================================================================================
 
 :: Download and integrate all post-SP1 updates up to August 2023
- set InstallHotfixes=1
+set InstallHotfixes=1
 
 :: Additional updates, installed silently after Windows Setup Ends
 ::
-  :: - Silently install NET Framework 4.8
-   set IncludeNET4=1
-  :: - Execute queued NET compilations (takes some extra time after setup, but then Windows works faster)
-   set ExecuteNGEN=0
-  :: - Silently install DirectX 9 June 2010
-   set IncludeDX9=1
+:: - Silently install NET Framework 4.8
+set IncludeNET4=1
+:: - Execute queued NET compilations (takes some extra time after setup, but then Windows works faster)
+set ExecuteNGEN=0
+:: - Silently install DirectX 9 June 2010
+set IncludeDX9=1
 
 
 
 :: Apply custom patches (from corresponding section below)
 :: and integrate files from folder add_these_files_to_Windows\(x86 or x64)
- set ApplyCustPatches=1
+set ApplyCustPatches=1
 
-  :: Custom Patches sub-sections:
-  :: - Set default NTP time server instead of time.windows.com
-   set NTPserver=pool.ntp.org
-  :: - Disable time sync service entirely, regardless of the setting above.
-  ::   It is recommended to disable it when you want to set your date/time manually or using third party TimeSync software.
-   set DisableTimeSync=0
-  :: - Disable automatic Internet Connection Checking
-  ::   Otherwise Windows connects to http://www.msftconnecttest.com/connecttest.txt to check Internet connection
-   set DisableInternetConnectionChecking=1
-  :: - Disable search indexing.
-  ::   It is recommended to disable it on systems installed on hard drives or other low resource computers.
-   set DisableSearchIndexing=1
-  :: - Remove System Restore
-   set RemoveSR=1
-  :: - Remove Windows Defender
-   set RemoveDefender=1
-  :: - Disable obsolete SMBv1 protocol (not needed unless you share disks and printers with Widows XP or older)
-   set DisableSMBv1=1
-  :: - Disable obsolete LLNR protocol (introduced in Vista, removed in W10, was used as naming service on LANs)
-   set DisableLLNR=1
-  :: - Disable automatic update of root certificates that are used for encrypted connections.
-  ::   ExtraScripts\Security\UpdateRootCerts.cmd script can be used to update certificates manually
-   set DisableRootCertUpdate=0
-  :: - Disable All Event Logs (sometimes causes problems with Microsoft SQL or similar software)
-   set DisableEventLogs=0
-  :: - Disable ciphering protocols older than TLS 1.2 (improves security but could cause problems with some web sites and services)
-   set DisableObsoleteSSL=0
-  :: - 1 = Disable AutoPlay for all devices inlcuding CD/DVD media
-  :: - 0 = Enable autoplay for CD/DVD media only, but disable for the rest for security.
-  ::       AutoPlay has been one of the main sources of spreading of viruses in the past.
-   set DisableCDAutoPlay=1
-  ::  - Disable Prefetch and Superfetch 
-  ::    May be useful for fast SSD drives or for systems with low RAM memory.
-   set DisablePrefetcher=0
-  ::  - Use NVMe driver backported from Win8 instead of standard Microsoft KB2990941 update.
-  ::    You can try to switch on this option if NVMe doesn't work for you.
-   set UseBackportedNVMe=0
-  :: - Removes legacy VGA video driver, which is recommended for UEFI class 3 firmare
-  ::   You MUST! provide vendor Video Card driver when legacy VGA is removed
-   set RemoveLegacyVGA=0
+:: Custom Patches sub-sections:
+:: - Set default NTP time server instead of time.windows.com
+set NTPserver=pool.ntp.org
+:: - Disable time sync service entirely, regardless of the setting above.
+::   It is recommended to disable it when you want to set your date/time manually or using third party TimeSync software.
+set DisableTimeSync=0
+:: - Disable automatic Internet Connection Checking
+::   Otherwise Windows connects to http://www.msftconnecttest.com/connecttest.txt to check Internet connection
+set DisableInternetConnectionChecking=1
+:: - Disable search indexing.
+::   It is recommended to disable it on systems installed on hard drives or other low resource computers.
+set DisableSearchIndexing=1
+:: - Remove System Restore
+set RemoveSR=1
+:: - Remove Windows Defender
+set RemoveDefender=1
+:: - Disable obsolete SMBv1 protocol (not needed unless you share disks and printers with Widows XP or older)
+set DisableSMBv1=1
+:: - Disable obsolete LLNR protocol (introduced in Vista, removed in W10, was used as naming service on LANs)
+set DisableLLNR=1
+:: - Disable automatic update of root certificates that are used for encrypted connections.
+::   ExtraScripts\Security\UpdateRootCerts.cmd script can be used to update certificates manually
+set DisableRootCertUpdate=0
+:: - Disable All Event Logs (sometimes causes problems with Microsoft SQL or similar software)
+set DisableEventLogs=0
+:: - Disable ciphering protocols older than TLS 1.2 (improves security but could cause problems with some web sites and services)
+set DisableObsoleteSSL=0
+:: - Also allow TLS 1.1
+set DisableObsoleteSSL_Allow_TLS_11=1
+:: - 1 = Disable AutoPlay for all devices inlcuding CD/DVD media
+:: - 0 = Enable autoplay for CD/DVD media only, but disable for the rest for security.
+::       AutoPlay has been one of the main sources of spreading of viruses in the past.
+set DisableCDAutoPlay=1
+::  - Disable Prefetch and Superfetch 
+::    May be useful for fast SSD drives or for systems with low RAM memory.
+set DisablePrefetcher=0
+::  - Use NVMe driver backported from Win8 instead of standard Microsoft KB2990941 update.
+::    You can try to switch on this option if NVMe doesn't work for you.
+set UseBackportedNVMe=0
+:: - Removes legacy VGA video driver, which is recommended for UEFI class 3 firmare
+::   You MUST! provide vendor Video Card driver when legacy VGA is removed
+set RemoveLegacyVGA=0
+:: ==============================================
+:: - Disable User Account Control
+set DisableUAC=1
+:: - Disable configuring Power Options
+set ApplyPowerOptionsConfig=0
+:: - Save + Hide Properties ZoneInformation alt stream on downloads = nope
+set EnableHideSaveZoneInformation=0
+:: - Disable Certificate Revocation Check
+set DisableCertificateRevocationCheck=1
+:: - 
+set DisableKeyboardSwitchingKey=1
+:: - 
+set HideLanguageBar=1
+:: - 
+set DisableAnimationsSounds=1
+:: - 
+set DisableBeepService=1
+:: - 
+set DisableNTFSLastAccess=1
+:: - 
+set DisablePrintEventLog=1
+:: - 
+set HideMapNetworkDrive=0
+:: - 
+set HideManageMyComputer=0
+:: - 
+set DisableRecentDocsHistory=1
+:: - 
+set DisableUPnP=1
+:: - 
+set DisableAddressBarAutoSuggest=0
+:: ==============================================
 
 
 
@@ -77,21 +133,21 @@ CLS
 ::  - from add_these_drivers_to_Installer\(x86 or x64) to boot.wim
 ::  - from add_these_drivers_to_Windows\(x86 or x64) to install.wim
 ::  - from add_these_drivers_to_Recovery\(x86 or x64) to winRE.wim (inside install.wim)
- set AddDrivers=1
+set AddDrivers=1
 
 
 :: Cleanup Images (redundant unless you manualy slipstreamed Service Pack 1)
- set CleanupImages=0
+set CleanupImages=0
 
 
 :: Repack/recompress boot.wim and install.wim to save some space
- set RepackImages=1
+set RepackImages=1
 
 :: Split install.wim if its size exceed 4 GB
- set SplitInstallWim=1
+set SplitInstallWim=1
 
 :: Create ISO image or leave installer files in DVD folder
- set CreateISO=1
+set CreateISO=1
 
 
 :: ============================================================================================================
@@ -462,25 +518,33 @@ if not "%IncludeDX9%"=="0" set SetupCompleteCMD=1
 
 mkdir "%~dp0DVD\sources\$oem$\$$\Setup\Scripts" >nul 2>&1
 echo @ECHO OFF>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-REM Re-apply disable NTFS last access time update
-echo fsutil behavior set disableLastAccess ^1 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+
+if not "%DisableNTFSLastAccess%"=="0" (
+ REM Re-apply disable NTFS last access time update
+ echo fsutil behavior set disableLastAccess ^1 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+)
+
 REM Unlimited max password age
 echo net accounts /maxpwage:unlimited ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
 REM Re-apply disable hibernation
 echo powercfg -h off ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-REM Re-apply disable screen off timer
-echo powercfg -SETACVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-echo powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-REM Re-apply disable USB AutoSuspend
-echo powercfg -SETDCVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-echo powercfg -SETACVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-echo powercfg -SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-echo powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-REM Re-apply disable idle Hard Disk auto power off
-echo powercfg -SETDCVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-echo powercfg -SETACVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-echo powercfg -SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
-echo powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+
+if not "%ApplyPowerOptionsConfig%"=="0" (
+ REM Re-apply disable screen off timer
+ echo powercfg -SETACVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ echo powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ REM Re-apply disable USB AutoSuspend
+ echo powercfg -SETDCVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ echo powercfg -SETACVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ echo powercfg -SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ echo powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ REM Re-apply disable idle Hard Disk auto power off
+ echo powercfg -SETDCVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ echo powercfg -SETACVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ echo powercfg -SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+ echo powercfg -SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0 ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
+)
+
 if exist "%~dp0hotfixes\AuthRoot.p7b" (
  copy /b /y "%~dp0hotfixes\AuthRoot.p7b" "%~dp0mount\1\Windows" >nul 2>&1
  echo certutil -addstore -f authroot "%%windir%%\AuthRoot.p7b" ^>nul 2^>^&^1>>"%~dp0DVD\sources\$oem$\$$\Setup\Scripts\SetupComplete.cmd"
@@ -1096,35 +1160,53 @@ if not "%ApplyCustPatches%"=="1" goto skipCustPatches
 REM User Setup for each new user, re-apply some  settings which otherwise aren't honored when set in default user registry node
 echo @ECHO OFF>"%~dp0mount\1\Windows\UserSetup.cmd"
 echo TITLE User settings setup>>"%~dp0mount\1\Windows\UserSetup.cmd"
-REM Re-apply disable NTFS last access time update
-echo fsutil behavior set disableLastAccess ^1 ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+
+if not "%DisableNTFSLastAccess%"=="0" (
+ REM Re-apply disable NTFS last access time update
+ echo fsutil behavior set disableLastAccess ^1 ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+)
+
 REM Disable IE11 proxy autodetection
 echo reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Connections" /v "DefaultConnectionSettings" /t REG_BINARY /d "3c0000000f0000000100000000000000090000003132372e302e302e3100000000010000000000000010d75bde6f11c50101000000c23f806f0000000000000000" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
 echo reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Connections" /v "SavedLegacySettings" /t REG_BINARY /d "3c000000040000000100000000000000090000003132372e302e302e3100000000010000000000000010d75bde6f11c50101000000c23f806f0000000000000000" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-REM Disable checking of certificate server and issuer revocation
-echo reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "CertificateRevocation" /t REG_DWORD /d 0 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\WinTrust\Trust Providers\Software Publishing" /v "State" /t REG_DWORD /d 0x23e00 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-REM re-disable animations and sounds
-echo reg add "HKCU\Control Panel\Desktop" /v "UserPreferencesMask" /t REG_BINARY /d 9012078010000000 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v "MinAnimate" /t REG_SZ /d "0" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarAnimations" /t REG_DWORD /d 0 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo reg add "HKCU\AppEvents\Schemes" /ve /t REG_SZ /d ".None" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo for /f "tokens=1 delims=" %%%%a in ('reg query "HKCU\AppEvents\Schemes\Apps" 2^^^>nul ^^^| find /i "\Schemes\"') do (>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo  for /f "tokens=1 delims=" %%%%b in ('reg query "%%%%a" 2^^^>nul ^^^| find /i "%%%%a\"') do (>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo   for /f "tokens=1 delims=" %%%%c in ('reg query "%%%%b" /e /k /f ".Current" 2^^^>nul ^^^| find /i "%%%%b\.Current"') do (>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo    reg add "%%%%c" /ve /t REG_SZ /d "" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo   )>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo  )>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo )>>"%~dp0mount\1\Windows\UserSetup.cmd"
-REM Disable keyboard switching key combination
-echo reg add "HKCU\Keyboard Layout\Toggle" /v "Language Hotkey" /t REG_SZ /d "3" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo reg add "HKCU\Keyboard Layout\Toggle" /v "Hotkey" /t REG_SZ /d "3" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo reg add "HKCU\Keyboard Layout\Toggle" /v "Layout Hotkey" /t REG_SZ /d "3" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo for /l %%%%i in (2,1,5) do reg delete "HKCU\Keyboard Layout\Preload" /v %%%%i /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-REM Hide language bar
-echo reg add "HKCU\Software\Microsoft\CTF\LangBar" /v "ShowStatus" /t REG_DWORD /d 3 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo reg add "HKCU\Software\Microsoft\CTF\LangBar" /v "ExtraIconsOnMinimized" /t REG_DWORD /d 0 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
-echo reg add "HKCU\Software\Microsoft\CTF\LangBar" /v "Label" /t REG_DWORD /d 1 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+
+IF not "%DisableCertificateRevocationCheck%"=="0" (
+ REM Disable checking of certificate server and issuer revocation
+ echo reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "CertificateRevocation" /t REG_DWORD /d 0 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ REM 23c00 to 23e00 - will disable the CRL verification
+ echo reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\WinTrust\Trust Providers\Software Publishing" /v "State" /t REG_DWORD /d 0x23e00 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+)
+
+IF not "%DisableAnimationsSounds%"=="0" goto skipDisableAnimationsSounds
+ REM re-disable animations and sounds
+ echo reg add "HKCU\Control Panel\Desktop" /v "UserPreferencesMask" /t REG_BINARY /d 9012078010000000 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v "MinAnimate" /t REG_SZ /d "0" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarAnimations" /t REG_DWORD /d 0 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo reg add "HKCU\AppEvents\Schemes" /ve /t REG_SZ /d ".None" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo for /f "tokens=1 delims=" %%%%a in ('reg query "HKCU\AppEvents\Schemes\Apps" 2^^^>nul ^^^| find /i "\Schemes\"') do (>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo  for /f "tokens=1 delims=" %%%%b in ('reg query "%%%%a" 2^^^>nul ^^^| find /i "%%%%a\"') do (>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo   for /f "tokens=1 delims=" %%%%c in ('reg query "%%%%b" /e /k /f ".Current" 2^^^>nul ^^^| find /i "%%%%b\.Current"') do (>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo    reg add "%%%%c" /ve /t REG_SZ /d "" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo   )>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo  )>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo )>>"%~dp0mount\1\Windows\UserSetup.cmd"
+:skipDisableAnimationsSounds
+
+if not "%DisableKeyboardSwitchingKey%"=="%0%" goto skipDisableKeyboardSwitchingKey
+ REM Disable keyboard switching key combination
+ echo reg add "HKCU\Keyboard Layout\Toggle" /v "Language Hotkey" /t REG_SZ /d "3" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo reg add "HKCU\Keyboard Layout\Toggle" /v "Hotkey" /t REG_SZ /d "3" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo reg add "HKCU\Keyboard Layout\Toggle" /v "Layout Hotkey" /t REG_SZ /d "3" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo for /l %%%%i in (2,1,5) do reg delete "HKCU\Keyboard Layout\Preload" /v %%%%i /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+:skipDisableKeyboardSwitchingKey
+
+if not "%HideLanguageBar%"=="%0%" (
+ REM Hide language bar
+ echo reg add "HKCU\Software\Microsoft\CTF\LangBar" /v "ShowStatus" /t REG_DWORD /d 3 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo reg add "HKCU\Software\Microsoft\CTF\LangBar" /v "ExtraIconsOnMinimized" /t REG_DWORD /d 0 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+ echo reg add "HKCU\Software\Microsoft\CTF\LangBar" /v "Label" /t REG_DWORD /d 1 /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
+)
+
 echo reg load HKLM\TK_NTUSER "%%SystemDrive%%\Users\Default\ntuser.dat" ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
 echo reg delete "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Run" /v "UserSetup" /f ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
 echo reg unload HKLM\TK_NTUSER ^>nul 2^>^&^1>>"%~dp0mount\1\Windows\UserSetup.cmd"
@@ -1221,16 +1303,22 @@ reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "UserS
   reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Windows\Network Connections" /v "NC_DoNotShowLocalOnlyIcon" /t REG_DWORD /d 1 /f >nul
  )
 
- REM Disable Recent Docs History
- Reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoRecentDocsHistory" /t REG_DWORD /d 1 /f >nul
- Reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoRecentDocsHistory" /t REG_DWORD /d 1 /f >nul
- Reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "ClearRecentDocsOnExit" /t REG_DWORD /d 1 /f >nul
+ if not "%DisableRecentDocsHistory%"=="0" (
+  REM Disable Recent Docs History
+  Reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoRecentDocsHistory" /t REG_DWORD /d 1 /f >nul
+  Reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoRecentDocsHistory" /t REG_DWORD /d 1 /f >nul
+  Reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "ClearRecentDocsOnExit" /t REG_DWORD /d 1 /f >nul
+ )
 
- REM Hide Map network drive from context menu on This PC
- Reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoNetConnectDisconnect" /t REG_DWORD /d 1 /f >nul
+ if not "%HideMapNetworkDrive%"=="0" (
+  REM Hide Map network drive from context menu on This PC
+  Reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoNetConnectDisconnect" /t REG_DWORD /d 1 /f >nul
+ )
 
- REM Hide Manage verb from context menu on This PC
- Reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoManageMyComputerVerb" /t REG_DWORD /d 1 /f >nul
+ if not "%HideManageMyComputer%"=="0" (
+  REM Hide Manage verb from context menu on This PC
+  Reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoManageMyComputerVerb" /t REG_DWORD /d 1 /f >nul
+ )
 
  REM No low disk space warning
  Reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoLowDiskSpaceChecks" /t REG_DWORD /d 1 /f >nul
@@ -1253,16 +1341,21 @@ reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "UserS
  reg add "HKLM\TK_NTUSER\Control Panel\Accessibility\ToggleKeys" /v "Flags" /t REG_SZ /d "58" /f >nul
  reg add "HKLM\TK_NTUSER\Control Panel\Accessibility\Keyboard Response" /v "Flags" /t REG_SZ /d "122" /f >nul
 
+if not "%DisableKeyboardSwitchingKey%"=="%0%" (
  REM Disable keyboard switching key combination
  reg add "HKLM\TK_NTUSER\Keyboard Layout\Toggle" /v "Language Hotkey" /t REG_SZ /d "3" /f >nul
  reg add "HKLM\TK_NTUSER\Keyboard Layout\Toggle" /v "Hotkey" /t REG_SZ /d "3" /f >nul
  reg add "HKLM\TK_NTUSER\Keyboard Layout\Toggle" /v "Layout Hotkey" /t REG_SZ /d "3" /f >nul
+)
 
+if not "%HideLanguageBar%"=="%0%" (
  REM Hide language bar
  reg add "HKLM\TK_NTUSER\Software\Microsoft\CTF\LangBar" /v "ShowStatus" /t REG_DWORD /d 3 /f >nul
  reg add "HKLM\TK_NTUSER\Software\Microsoft\CTF\LangBar" /v "ExtraIconsOnMinimized" /t REG_DWORD /d 0 /f >nul
  reg add "HKLM\TK_NTUSER\Software\Microsoft\CTF\LangBar" /v "Label" /t REG_DWORD /d 1 /f >nul
+)
 
+if not "%DisableUPnP%"=="%0%" (
  REM Disable UPnP
  reg add "HKLM\TK_SYSTEM\ControlSet001\Services\upnphost" /v "Start" /t REG_DWORD /d 4 /f >nul
  reg add "HKLM\TK_SYSTEM\ControlSet001\Services\SSDPSRV" /v "Start" /t REG_DWORD /d 4 /f >nul
@@ -1274,6 +1367,7 @@ reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "UserS
  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg delete "HKLM\TK_SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Plain\{5A40E926-9E86-4B89-9CFD-B12311724371}" /f >nul 2>&1
  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg delete "HKLM\TK_SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{5A40E926-9E86-4B89-9CFD-B12311724371}" /f >nul 2>&1
  del /q/f "%~dp0mount\1\Windows\System32\Tasks\Microsoft\Windows\UPnP\*" >nul 2>&1
+)
 
  REM Disable Remote Assistance
  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Remote Assistance" /v "fAllowToGetHelp" /t REG_DWORD /d "0" /f >nul
@@ -1313,8 +1407,10 @@ reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "UserS
  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\WAU" /v "Disabled" /t REG_DWORD /d 1 /f >nul
  del /q /f "%~dp0mount\1\ProgramData\Microsoft\Windows\Start Menu\Programs\Windows Anytime Upgrade.lnk" >nul 2>&1
 
+if not "%DisableUAC%"=="0" (
  REM Disable User Account Control
  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA  /t REG_DWORD /d 0 /f >nul
+)
 
  REM Remove Windows Defender and MRT
 if "%RemoveDefender%"=="0" goto skipRemoveDefender
@@ -1377,7 +1473,7 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
   "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait cmd /c "copy /b /y "%~dp0hotfixes\pending.tmp" "%~dp0mount\1\Windows\winsxs\pending.xml"" >nul
 :skipRemoveDefender
 
- REM Disable App Compatinility Assistant
+ REM Disable App Compatibility Assistant
  reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "AITEnable" /t REG_DWORD /d 0 /f >nul
  reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "DisablePCA" /t REG_DWORD /d 1 /f >nul
  reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "DisableInventory" /t REG_DWORD /d 1 /f >nul
@@ -1605,7 +1701,7 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
   "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg delete "HKLM\TK_SOFTWARE\Classes\SrDrvWuHelper.SrDrvWuHelper" /f >nul 2>&1
   "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg delete "HKLM\TK_SOFTWARE\Classes\SrDrvWuHelper.SrDrvWuHelper.1" /f >nul 2>&1
 
-  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait cmd /c "del /q /f "%~dp0mount\1\Windows\PolicyDefinitions\SystemRestore.admx"" >nul 2>&1
+  REM "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait cmd /c "del /q /f "%~dp0mount\1\Windows\PolicyDefinitions\SystemRestore.admx"" >nul 2>&1
   "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait cmd /c "del /q /f /s "%~dp0mount\1\Windows\System32\rstrui.exe.mui"" >nul 2>&1
   "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait cmd /c "del /q /f /s "%~dp0mount\1\Windows\System32\srcore.dll.mui"" >nul 2>&1
   "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait cmd /c "del /q /f /s "%~dp0mount\1\Windows\System32\srrstr.dll.mui"" >nul 2>&1
@@ -1628,7 +1724,7 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
 
   del /q /f "%~dp0mount\1\ProgramData\Microsoft\Windows\Start Menu\Programs\Accessories\System Tools\System Restore.lnk" >nul 2>&1
   del /q /f /s "%~dp0mount\1\Windows\System32\wbem\sr.mfl" >nul 2>&1
-  del /q /f /s "%~dp0mount\1\Windows\PolicyDefinitions\SystemRestore.adml" >nul 2>&1
+  REM del /q /f /s "%~dp0mount\1\Windows\PolicyDefinitions\SystemRestore.adml" >nul 2>&1
 
   del /q /f "%~dp0mount\1\Windows\System32\Tasks\Microsoft\Windows\SystemRestore\SR" >nul 2>&1
   "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg delete "HKLM\TK_SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Boot\{994C86AD-A929-4B2C-88A0-4E25A107A029}" /f >nul 2>&1
@@ -1917,7 +2013,7 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait cmd /c "copy /b /y "%~dp0hotfixes\pending.tmp" "%~dp0mount\1\Windows\winsxs\pending.xml"" >nul
 
 
- REM Disable IPv6 Depricated Tunneling Services
+ REM Disable IPv6 Deprecated Tunneling Services
  Reg add "HKLM\TK_SYSTEM\ControlSet001\Services\TCPIP6\Parameters" /v "DisabledComponents" /t REG_DWORD /d "1" /f >nul
  Reg add "HKLM\TK_SYSTEM\ControlSet002\Services\TCPIP6\Parameters" /v "DisabledComponents" /t REG_DWORD /d "1" /f >nul
  Reg add "HKLM\TK_SYSTEM\ControlSet001\Services\iphlpsvc" /v "Start" /t REG_DWORD /d "4" /f >nul
@@ -1960,10 +2056,13 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
  reg add "HKLM\TK_NTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarAnimations" /t REG_DWORD /d 0 /f >nul
 
 
+IF not "%DisableBeepService%"=="0" (
  REM Disable legacy PC speaker sound service which is as old as 1980 era
  reg add "HKLM\TK_SYSTEM\ControlSet001\Services\Beep" /v Start /t REG_DWORD /d 4 /f >nul
  reg add "HKLM\TK_SYSTEM\ControlSet002\Services\Beep" /v Start /t REG_DWORD /d 4 /f >nul
+)
 
+IF not "%DisableAnimationsSounds%"=="0" goto skipDisableAnimationsSounds
  REM Disable Sounds and Beeps
  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation" /v DisableStartupSound /t REG_DWORD /d 1 /f >nul
  reg add "HKLM\TK_NTUSER\Control Panel\Sound" /v "Beep" /t REG_SZ /d "no" /f >nul
@@ -1976,6 +2075,7 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
    )
   ) 
  )
+:skipDisableAnimationsSounds
 
  REM Various system tweaks
  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug" /v "Auto" /t REG_SZ /d "0" /f >nul
@@ -1983,11 +2083,15 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
 
  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\OptimalLayout" /v "EnableAutoLayout" /t REG_DWORD /d 0 /f >nul
 
- reg add "HKLM\TK_SYSTEM\ControlSet001\Control\FileSystem" /v NtfsDisableLastAccessUpdate /t REG_DWORD /d 1 /f >nul
- reg add "HKLM\TK_SYSTEM\ControlSet002\Control\FileSystem" /v NtfsDisableLastAccessUpdate /t REG_DWORD /d 1 /f >nul
-
- reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Print\Providers" /v EventLog /t REG_DWORD /d 0 /f >nul
- reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Print\Providers" /v EventLog /t REG_DWORD /d 0 /f >nul
+ if not "%DisableNTFSLastAccess%"=="0" (
+  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\FileSystem" /v NtfsDisableLastAccessUpdate /t REG_DWORD /d 1 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\FileSystem" /v NtfsDisableLastAccessUpdate /t REG_DWORD /d 1 /f >nul
+ )
+ 
+ if not "%DisablePrintEventLog%"=="0" (
+  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Print\Providers" /v EventLog /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Print\Providers" /v EventLog /t REG_DWORD /d 0 /f >nul
+ )
 
  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\CrashControl" /v CrashDumpEnabled /t REG_DWORD /d 0 /f >nul
  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\CrashControl" /v LogEvent /t REG_DWORD /d 0 /f >nul
@@ -2009,31 +2113,33 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power" /v HibernateEnabled /t REG_DWORD /d 0 /f >nul
  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power" /v HibernateEnabled /t REG_DWORD /d 0 /f >nul
 
- REM Disable Screen Off timer for Balanced and High Performance power schemes, when PC is connected to power source
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\7516b95f-f776-4464-8c53-06167f40cc99\3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\7516b95f-f776-4464-8c53-06167f40cc99\3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\7516b95f-f776-4464-8c53-06167f40cc99\3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\7516b95f-f776-4464-8c53-06167f40cc99\3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
-
- REM Disable USB AutoSuspend for Balanced and High Performance power schemes
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
-
- REM Disable idle Hard Disk auto power off for Balanced and High Performance power schemes
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
- "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+ if not "%ApplyPowerOptionsConfig%"=="0" (
+  REM Disable Screen Off timer for Balanced and High Performance power schemes, when PC is connected to power source
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\7516b95f-f776-4464-8c53-06167f40cc99\3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\7516b95f-f776-4464-8c53-06167f40cc99\3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\7516b95f-f776-4464-8c53-06167f40cc99\3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\7516b95f-f776-4464-8c53-06167f40cc99\3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  
+  REM Disable USB AutoSuspend for Balanced and High Performance power schemes
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\2a737441-1930-4402-8d77-b2bebba308a3\48e6b7a6-50f5-4782-a5d4-53bb8f07e226" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+  
+  REM Disable idle Hard Disk auto power off for Balanced and High Performance power schemes
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\381b4222-f694-41f0-9685-ff5bb260df2e\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v ACSettingIndex /t REG_DWORD /d 0 /f >nul
+  "%~dp0tools\%HostArchitecture%\NSudo.exe" -U:T -P:E -UseCurrentConsole -Wait reg add "HKLM\TK_SYSTEM\ControlSet002\Control\Power\User\PowerSchemes\8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c\0012ee47-9041-4b5d-9b77-535fba8b1442\6738e2c4-e8a5-4a42-b16a-e040e769756e" /v DCSettingIndex /t REG_DWORD /d 0 /f >nul
+ )
 
  REM Tweaks to disable SMBv1
  if not "%DisableSMBv1%"=="0" (
@@ -2091,13 +2197,18 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "PrivDiscUiShown" /t REG_DWORD /d 1 /f >nul
  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "WarnOnPost" /t REG_BINARY /d 00000000 /f >nul
  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "WarnOnZoneCrossing" /t REG_DWORD /d 0 /f >nul
- reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "CertificateRevocation" /t REG_DWORD /d 0 /f >nul
- reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\WinTrust\Trust Providers\Software Publishing" /v "State" /t REG_DWORD /d 0x23e00 /f >nul
  
- REM Disable AutoSuggest in Explorer address bar
- reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete" /v "AutoSuggest " /t REG_SZ /d "no" /f >nul
- reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete" /v "Append Completion" /t REG_SZ /d "no" /f >nul
- reg add "HKLM\TK_NTUSER\Software\Microsoft\Internet Explorer\AutoComplete" /v "Append Completion" /t REG_SZ /d "no" /f >nul
+ IF not "%DisableCertificateRevocationCheck%"=="0" (
+  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "CertificateRevocation" /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\WinTrust\Trust Providers\Software Publishing" /v "State" /t REG_DWORD /d 0x23e00 /f >nul
+ )
+ 
+ IF not "%DisableAddressBarAutoSuggest%"=="0" (
+  REM Disable AutoSuggest in Explorer address bar
+  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete" /v "AutoSuggest " /t REG_SZ /d "no" /f >nul
+  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete" /v "Append Completion" /t REG_SZ /d "no" /f >nul
+  reg add "HKLM\TK_NTUSER\Software\Microsoft\Internet Explorer\AutoComplete" /v "Append Completion" /t REG_SZ /d "no" /f >nul
+ )
 
  reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Internet Explorer\Main" /v "DisableFirstRunCustomize" /t REG_DWORD /d 1 /f >nul
 
@@ -2108,7 +2219,9 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
  reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Internet Explorer\Feed Discovery" /v "Enabled" /t REG_DWORD /d 0 /f >nul
 
  reg add "HKLM\TK_NTUSER\Software\Microsoft\Internet Explorer\Main\WindowsSearch" /v "EnabledScopes" /t REG_DWORD /d 0 /f >nul
- reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete" /v "AutoSuggest" /t REG_SZ /d "no" /f >nul
+ IF not "%DisableAddressBarAutoSuggest%"=="0" (
+  reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete" /v "AutoSuggest" /t REG_SZ /d "no" /f >nul
+ )
  reg add "HKLM\TK_NTUSER\Software\Microsoft\Internet Explorer\VersionManager" /v "DownloadVersionList" /t REG_DWORD /d 0 /f >nul
 
  reg add "HKLM\TK_SOFTWARE\Microsoft\Internet Explorer\Main" /v "Start Page" /t REG_SZ /d "about:blank" /f >nul
@@ -2127,8 +2240,10 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
  reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\4" /v "2301" /t REG_DWORD /d "3" /f >nul
  reg add "HKLM\TK_SOFTWARE\Policies\Microsoft\Internet Explorer\Suggested Sites" /v "Enabled" /t REG_DWORD /d 0 /f >nul
  
- reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "SaveZoneInformation" /t REG_DWORD /d 1 /f >nul
- reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "HideZoneInfoOnProperties" /t REG_DWORD /d 1 /f >nul
+ IF NOT "%EnableHideSaveZoneInformation%"=="0" (
+  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "SaveZoneInformation" /t REG_DWORD /d 1 /f >nul
+  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "HideZoneInfoOnProperties" /t REG_DWORD /d 1 /f >nul
+ )
 
  REM Replace Bing with Google
  reg delete "HKLM\TK_SOFTWARE\Microsoft\Internet Explorer\SearchScopes\{0633EE93-D776-472f-A0FF-E1416B8B2E3A}" /f >nul 2>&1
@@ -2165,6 +2280,7 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
 
  REM Re-enable SafeDisk Service for compatibility with old Games
  Reg add "HKLM\TK_SYSTEM\ControlSet001\Services\secdrv" /v Start /t REG_DWORD /d 2 /f >nul
+ Reg add "HKLM\TK_SYSTEM\ControlSet002\Services\secdrv" /v Start /t REG_DWORD /d 2 /f >nul
 
 
  REM Enable Fraunhofer IIS MP3 Professional Codec
@@ -2188,28 +2304,61 @@ if "%RemoveDefender%"=="0" goto skipRemoveDefender
  REM Disable obsolete SSL and TLS protocols
  if not "%DisableObsoleteSSL%"=="0" (
   reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client" /v "DisabledByDefault" /t REG_DWORD /d 1 /f >nul
-  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client" /v "Enabled" /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client" /v "Enabled"           /t REG_DWORD /d 0 /f >nul
   reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client" /v "DisabledByDefault" /t REG_DWORD /d 1 /f >nul
-  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client" /v "Enabled" /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client" /v "Enabled"           /t REG_DWORD /d 0 /f >nul
+  
   reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client" /v "DisabledByDefault" /t REG_DWORD /d 1 /f >nul
-  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client" /v "Enabled" /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client" /v "Enabled"           /t REG_DWORD /d 0 /f >nul
   reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client" /v "DisabledByDefault" /t REG_DWORD /d 1 /f >nul
-  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client" /v "Enabled" /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client" /v "Enabled"           /t REG_DWORD /d 0 /f >nul
+  
   reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" /v "DisabledByDefault" /t REG_DWORD /d 1 /f >nul
-  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" /v "Enabled" /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" /v "Enabled"           /t REG_DWORD /d 0 /f >nul
   reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" /v "DisabledByDefault" /t REG_DWORD /d 1 /f >nul
-  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" /v "Enabled" /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" /v "Enabled"           /t REG_DWORD /d 0 /f >nul
+  
   reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "DisabledByDefault" /t REG_DWORD /d 1 /f >nul
-  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "Enabled" /t REG_DWORD /d 0 /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "Enabled"           /t REG_DWORD /d 0 /f >nul
   reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "DisabledByDefault" /t REG_DWORD /d 1 /f >nul
-  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "Enabled" /t REG_DWORD /d 0 /f >nul
-  if "%ImageArchitecture%"=="x64" (
-   reg add "HKLM\TK_SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DefaultSecureProtocols" /t REG_DWORD /d "2048" /f >nul
-   reg add "HKLM\TK_SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings" /v "SecureProtocols" /t REG_DWORD /d "2048" /f >nul
+  reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "Enabled"           /t REG_DWORD /d 0 /f >nul
+  
+  if not "%DisableObsoleteSSL_Allow_TLS_11%"=="0" (
+    reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "DisabledByDefault" /t REG_DWORD /d 0 /f >nul
+    reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "Enabled"           /t REG_DWORD /d 1 /f >nul
+    reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "DisabledByDefault" /t REG_DWORD /d 0 /f >nul
+    reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v "Enabled"           /t REG_DWORD /d 1 /f >nul
   )
-  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DefaultSecureProtocols" /t REG_DWORD /d "2048" /f >nul
-  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" /v "SecureProtocols" /t REG_DWORD /d "2048" /f >nul
-  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "SecureProtocols" /t REG_DWORD /d "2048" /f >nul
+  
+  REM reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client" /v "DisabledByDefault" /t REG_DWORD /d 0 /f >nul
+  REM reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client" /v "Enabled"           /t REG_DWORD /d 1 /f >nul
+  REM reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client" /v "DisabledByDefault" /t REG_DWORD /d 0 /f >nul
+  REM reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client" /v "Enabled"           /t REG_DWORD /d 1 /f >nul
+
+  REM #Not supported on Windows 7
+  REM reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.3\Client" /v "DisabledByDefault" /t REG_DWORD /d 0 /f >nul
+  REM reg add "HKLM\TK_SYSTEM\ControlSet001\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.3\Client" /v "Enabled"           /t REG_DWORD /d 1 /f >nul
+  REM reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.3\Client" /v "DisabledByDefault" /t REG_DWORD /d 0 /f >nul
+  REM reg add "HKLM\TK_SYSTEM\ControlSet002\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.3\Client" /v "Enabled"           /t REG_DWORD /d 1 /f >nul
+
+  REM 0x00000008 - Enable SSL 2.0 by default
+  REM 0x00000020 - Enable SSL 3.0 by default
+  REM 0x00000080 - Enable TLS 1.0 by default
+  REM 0x00000200 - Enable TLS 1.1 by default
+  REM 0x00000800 - Enable TLS 1.2 by default
+  REM 0x800             = 2048 (TLS1.2)
+  REM 0x800+0x200=0xA00 = 2560 (TLS1.1 and 1.2)
+  
+  set SecureProtocols=2048
+  if not "%DisableObsoleteSSL_Allow_TLS_11%"=="0" set SecureProtocols=2560
+  
+  if "%ImageArchitecture%"=="x64" (
+   reg add "HKLM\TK_SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DefaultSecureProtocols" /t REG_DWORD /d "!SecureProtocolsValue!" /f >nul
+   reg add "HKLM\TK_SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings"         /v "SecureProtocols"        /t REG_DWORD /d "!SecureProtocolsValue!" /f >nul
+  )
+  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"              /v "DefaultSecureProtocols" /t REG_DWORD /d "!SecureProtocolsValue!" /f >nul
+  reg add "HKLM\TK_SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings"                      /v "SecureProtocols"        /t REG_DWORD /d "!SecureProtocolsValue!" /f >nul
+  reg add "HKLM\TK_NTUSER\Software\Microsoft\Windows\CurrentVersion\Internet Settings"               /v "SecureProtocols"        /t REG_DWORD /d "!SecureProtocolsValue!" /f >nul
  )
 
  REM Disable Automatic Update of root certificates during installation
